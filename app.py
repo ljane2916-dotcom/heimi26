@@ -40,13 +40,13 @@ if uploaded_file is not None:
     # Stage 1: Image to Text 
     st.subheader('🐾 Teddy sees...')
     scenario = img2text(uploaded_file.name)
-    st.write(f": orange[I think I see {scenario} in this picture!]")
+    st.write(f":orange[I think I see {scenario} in this picture!]")
 
     # Stage 2: Text to Story
     st.subheader('🧸 Teddy is writing a story for you...')
     story = text2story(scenario)
     st.balloons()
-    st.write(f": orange[**🐻 Teddy's Honey Tale:**] {story}")
+    st.write(f":orange[**🐻 Teddy's Honey Tale:**] {story}")
 
     # Stage 3: Story to Audio
     st.subheader("🎧 Listen to Teddy!")
