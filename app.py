@@ -8,7 +8,6 @@ def img2text(url):
     text = image_to_text_model(url)[0]["generated_text"]
     return text
 
-
 def clean_text(text):
     """
     Clean generated text by removing extra spaces and line breaks.
@@ -17,22 +16,19 @@ def clean_text(text):
     text = " ".join(text.split())
     return text.strip()
 
-
 def text2story(caption):
-    """
-    Generate a 50-100 word child-friendly story based on the image caption.
-    """
     story_generator = pipeline(
         "text2text-generation",
-        model="google/flan-t5-base"
+        model="google/flan-t5-small"
     )
 
     prompt = (
         "Write a simple, happy story for children aged 3 to 10. "
         "The story must be based only on this picture description: "
         f"{caption}. "
-        "The story should be safe, friendly, and easy to understand. "
-        "Do not include death, stealing, accidents, romance, violence, or scary events. "
+        "Use easy English. "
+        "Make the story safe, friendly, and positive. "
+        "Clearly mention the main things in the picture. "
         "Write 50 to 100 words."
     )
 
