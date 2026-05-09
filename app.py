@@ -27,14 +27,15 @@ def text2story(caption):
     story_generator = load_story_generator()
 
     prompt = (
-        "Write one short story for children aged 3 to 10. "
-        f"Picture description: {caption}. "
-        "Do not add new characters, danger, sadness, romance, death, accidents, or scary events. "
-        "Use simple English. "
-        "Write 5 to 7 sentences. "
-        "Do not repeat sentences. "
-        "The story should be 50 to 100 words."
-    )
+    f"Based on this scene: '{caption}', tell a magical and happy short story for a child. "
+    "Guidelines:\n"
+    "1. Start with 'Once upon a time'.\n"
+    "2. Describe what the characters are doing and how they feel happy.\n"
+    "3. Use simple, cheerful words that a 5-year-old can understand.\n"
+    "4. The story should have a beginning, a middle, and a joyful ending.\n"
+    "5. Keep it between 60 to 100 words.\n"
+    "Important: Focus on fun and friendship. No scary or sad things."
+)
 
     result = story_generator(
         prompt,
