@@ -20,26 +20,30 @@ def clean_text(text):
 def load_story_generator():
     return pipeline(
         "text2text-generation",
-        model="google/flan-t5-small"
+        model="google/flan-t5-base"
     )
 
 def text2story(caption):
     story_generator = load_story_generator()
 
     prompt = (
-        "Write a simple, happy story for children aged 3 to 10. "
-        "The story must be based only on this picture description: "
-        f"{caption}. "
-        "Use easy English. "
-        "Make the story safe, friendly, and positive. "
-        "Clearly mention the main things in the picture. "
-        "Write 50 to 100 words."
+        "Write one short story for children aged 3 to 10. "
+        f"Picture description: {caption}. "
+        "The story must only include these elements: children, park, playing, sharing, and friendship. "
+        "Do not add new characters, danger, sadness, romance, death, accidents, or scary events. "
+        "Use simple English. "
+        "Write 5 to 7 sentences. "
+        "Do not repeat sentences. "
+        "The story should be 50 to 100 words."
     )
 
     result = story_generator(
         prompt,
         max_new_tokens=120,
-        do_sample=False
+        num_beams=4,
+        no_repeat_ngram_size=3,
+        repetition_penalty=1.4,
+        early_stopping=True
     )
 
     story = result[0]["generated_text"]
