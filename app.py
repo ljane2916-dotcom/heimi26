@@ -9,6 +9,15 @@ def img2text(url):
     return text
 
 
+def clean_text(text):
+    """
+    Clean generated text by removing extra spaces and line breaks.
+    """
+    text = text.replace("\n", " ")
+    text = " ".join(text.split())
+    return text.strip()
+
+
 def text2story(caption):
     """
     Generate a 50-100 word child-friendly story based on the image caption.
@@ -35,11 +44,6 @@ def text2story(caption):
 
     story = result[0]["generated_text"]
     story = clean_text(story)
-
-    if len(story.split()) < 50 or not is_child_friendly(story):
-        story = fallback_story(caption)
-
-    story = limit_words(story, max_words=100)
 
     return story
     
