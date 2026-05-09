@@ -27,12 +27,14 @@ def text2story(caption):
     story_generator = load_story_generator()
 
     prompt = (
-        f"Write a short children's story about {caption}. "
-        "Structure: \n"
-        "1. Start with 'Once upon a time'. \n"
-        "2. Describe a happy moment. \n"
-        "3. END the story with a final happy sentence like 'They all went home with a big smile.' \n"
-        "Limit the story to 5-7 sentences and about 80 words."
+        f"Write a magical short story for a child based on this scene: '{caption}'. \n\n"
+        "Task: \n"
+        "1. Identify the main characters and objects in the description. \n"
+        "2. Describe the actions: What are they doing? How are they playing? \n"
+        "3. Describe the colors and the happy feelings of the scene. \n"
+        "4. Use 5-8 descriptive sentences to reach 80 words. \n"
+        "5. DO NOT invent new locations. Stay within the scene. \n\n"
+        "Story start: Once upon a time,"
     )
 
     result = story_generator(
@@ -40,7 +42,7 @@ def text2story(caption):
         max_new_tokens=150,    
         min_new_tokens=80,     
         do_sample=True,
-        temperature=0.7, 
+        temperature=0.6, 
         repetition_penalty=3.5,
         no_repeat_ngram_size=3  
     )
@@ -48,9 +50,8 @@ def text2story(caption):
     story = result[0]["generated_text"]
     
    
-    story = story.strip()
-    if not story.endswith(('.', '!', '?')):
-        story += " and they lived happily ever after."
+    if not story.lower().startswith("once upon a time"):
+        story = "Once upon a time, " + story
 
     return clean_text(story)
     
