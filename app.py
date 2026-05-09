@@ -9,18 +9,19 @@ def img2text(url):
     return text
 
 def text2story(scenario):
-    refined_prompt = f"A very short, sweet, and happy bedtime story for a 5-year-old kid: {scenario}"
+    refined_prompt = f"Teddy bear tells a happy, cute, and very simple bedtime story for a little child about: {scenario}. Once upon a time in a sunny forest,"
+    
     story_pipe = pipeline("text-generation", model="pranavpsv/genre-story-generator-v2")
     story_results = story_pipe(
         refined_prompt,
-        max_new_tokens=80,
+        max_new_tokens=60, 
         do_sample=True,
-        temperature=0.7,
+        temperature=0.8,
         truncation=True
     )
     full_text = story_results[0]['generated_text']
-    # Ensure the return statement is aligned with the code above
-    story = full_text.replace(refined_prompt, "").strip()
+    
+    story = full_text.replace(refined_prompt, "Once upon a time in a sunny forest,").strip()
     return story
     
 def text2audio(story_text):
