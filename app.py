@@ -1,3 +1,5 @@
 import streamlit as st
 
-st.write("ISOM5240")
+st.title("title")
+st.header("header")
+st.subheader("sub_header")
