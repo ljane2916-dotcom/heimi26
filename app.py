@@ -25,30 +25,27 @@ def load_story_generator():
 
 def text2story(caption):
     story_generator = load_story_generator()
-    
+
+    # 1. 在 Prompt 里明确字数边界，去掉 "long" 这种词
     prompt = (
-        f"Write a creative and happy short story for a 5-year-old child about {caption}. "
-        "The story must start with 'Once upon a time' and be at least 6 sentences long. "
-        "Make it a fun adventure with a happy ending."
+        f"Write a short, happy story for a child about {caption}. "
+        "The story must be between 60 and 90 words. "
+        "Start with 'Once upon a time'. "
+        "Use only 5 to 6 sentences. Focus on one simple fun moment."
     )
 
-   
+    # 2. 调整参数：max_new_tokens 是控制长度最有效的武器
+    # 1个单词大约 1.3 个 token，100个词大约就是 130 tokens
     result = story_generator(
         prompt,
-        max_length=160,       
-        min_length=80,         
-        do_sample=True,        
-        temperature=0.8,      
-        top_k=50,
-        top_p=0.95,
-        repetition_penalty=2.5 
+        max_new_tokens=130,    # 严格上限，防止生成过长
+        min_new_tokens=75,     # 严格下限，防止生成过短（确保达到50词）
+        do_sample=True,
+        temperature=0.7,       # 稍微降低随机性，让逻辑更紧凑
+        repetition_penalty=2.0 # 提高惩罚，防止反复说 "the park"
     )
 
     story = result[0]["generated_text"]
-    
-    if not story.lower().startswith("once upon a time"):
-        story = "Once upon a time, " + story
-
     return clean_text(story)
     
 @st.cache_resource
