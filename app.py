@@ -43,7 +43,7 @@ def text2story(caption):
         max_new_tokens=150,    # 稍微调大一点，给结尾留出“呼吸空间”，防止被切断
         min_new_tokens=80,     # 确保达到 50 词以上
         do_sample=True,
-        temperature=0.8, 
+        temperature=0.7, 
         repetition_penalty=3.5, # 【重要】显著提高惩罚，防止它一直念叨 "park" 和 "play"
         no_repeat_ngram_size=3  # 防止连续三个词重复
     )
