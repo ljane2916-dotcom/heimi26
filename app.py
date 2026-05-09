@@ -29,7 +29,6 @@ def text2story(caption):
     prompt = (
         "Write one short story for children aged 3 to 10. "
         f"Picture description: {caption}. "
-        "The story must only include these elements: children, park, playing, sharing, and friendship. "
         "Do not add new characters, danger, sadness, romance, death, accidents, or scary events. "
         "Use simple English. "
         "Write 5 to 7 sentences. "
