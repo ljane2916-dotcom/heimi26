@@ -8,34 +8,35 @@ def img2text(url):
     text = image_to_text_model(url)[0]["generated_text"]
     return text
 
-def text2story(scenario):
-    # 1. 初始化模型
-    story_pipe = pipeline("text-generation", model="gpt2")
-    
-    # 2. 关键改动：给 AI 一个具有引导性的开头，迫使它从图片内容往下写
-    # 不要用 "Based on..." 这种总结性的话，要用叙述性的句子
-    prompt = f"The {scenario} looked amazing. Suddenly,"
-    
-    # 3. 运行生成
-    story_results = story_pipe(
+
+def text2story(caption):
+    story_generator = pipeline(
+        "text-generation",
+        model="gpt2"
+    )
+
+    prompt = (
+        f"Write a happy, simple story for children aged 3 to 10. "
+        f"The story is based on this picture: {caption}. "
+        f"Use easy English. Do not include violence, death, stealing, accidents, romance, or scary events. "
+        f"Story: Once upon a time,"
+    )
+
+    result = story_generator(
         prompt,
-        max_new_tokens=60,      # 给它足够的空间去发挥
+        max_new_tokens=90,
         do_sample=True,
-        temperature=0.8,
-        top_p=0.9,             # 增加生成质量的采样限制
+        temperature=0.7,
+        top_p=0.9,
+        repetition_penalty=1.2,
         truncation=True
     )
-    
-    # 4. 提取生成的完整文本
-    full_text = story_results[0]['generated_text']
-    
-    # 5. 【修正清理逻辑】：如果 AI 连着你的 Prompt 一起写了，我们保留整体
-    # 这样能确保返回的一定是一段完整的、有意义的英文，不会变成 None
-    if full_text and len(full_text) > len(prompt):
-        return full_text
-    else:
-        # 如果生成太短，强行让它再试一次或者给一个基于 scenario 的补充
-        return f"{scenario} is the start of a great adventure that begins right here."
+
+    generated_text = result[0]["generated_text"]
+    story = generated_text.replace(prompt, "").strip()
+    story = "Once upon a time, " + story
+
+    return story
     
 def text2audio(story_text):
     audio_pipe = pipeline("text-to-audio", model="Matthijs/mms-tts-eng")
