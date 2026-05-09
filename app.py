@@ -26,16 +26,15 @@ def load_story_generator():
 def text2story(caption):
     story_generator = load_story_generator()
 
-    prompt = (
-        f"Write a magical short story for a child based on this scene: '{caption}'. \n\n"
-        "Task: \n"
-        "1. Identify the main characters and objects in the description. \n"
-        "2. Describe the actions: What are they doing? How are they playing? \n"
-        "3. Describe the colors and the happy feelings of the scene. \n"
-        "4. Use 5-8 descriptive sentences to reach 80 words. \n"
-        "5. DO NOT invent new locations. Stay within the scene. \n\n"
-        "Story start: Once upon a time,"
+   prompt = (
+        f"Write a short children's story about {caption}. "
+        "Structure: \n"
+        "1. Start with 'Once upon a time'. \n"
+        "2. Describe a happy moment. \n"
+        "3. END the story with a final happy sentence like 'They all went home with a big smile.' \n"
+        "Limit the story to 5-7 sentences and about 80 words."
     )
+
 
     result = story_generator(
         prompt,
@@ -50,8 +49,10 @@ def text2story(caption):
     story = result[0]["generated_text"]
     
    
-    if not story.lower().startswith("once upon a time"):
-        story = "Once upon a time, " + story
+   story = story.strip()
+    if not story.endswith(('.', '!', '?')):
+        # 尝试补一个温暖的结尾词
+        story += " and they lived happily ever after."
 
     return clean_text(story)
     
