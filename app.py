@@ -51,7 +51,6 @@ def text2story(caption):
    
     story = story.strip()
     if not story.endswith(('.', '!', '?')):
-        # 尝试补一个温暖的结尾词
         story += " and they lived happily ever after."
 
     return clean_text(story)
