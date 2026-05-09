@@ -1,47 +1,59 @@
-# Program title: Storytelling App
-
-# Import part
 import streamlit as st
 from transformers import pipeline
 
-# Function part
+# Function Part
+
 def img2text(url):
     image_to_text_model = pipeline("image-to-text", model="Salesforce/blip-image-captioning-base")
     text = image_to_text_model(url)[0]["generated_text"]
     return text
 
-# Main part
-st.set_page_config(page_title="Your Image to Audio Story", page_icon="🦜")
-st.header("Turn Your Image to Audio Story")
-uploaded_file = st.file_uploader("Select an Image...")
+def text2story(scenario):
+    story_pipe = pipeline("text-generation", model="pranavpsv/genre-story-generator-v2")
+    story_results = story_pipe(scenario)
+    story = story_results[0]['generated_text']
+    return story
+
+def text2audio(story_text):
+    audio_pipe = pipeline("text-to-audio", model="Matthijs/mms-tts-eng")
+    audio_data = audio_pipe(story_text)
+    return audio_data
+
+# Main Part
+
+# Page configuration and header
+st.set_page_config(page_title="Teddy's Story Corner", page_icon="🧸")
+st.title("🧸 Teddy's Story Corner 🍯")
+st.header("Hello! I'm Teddy. Let's make a story together!")
+
+# File uploader for user input
+uploaded_file = st.file_uploader("Share your photo with Teddy...")
 
 if uploaded_file is not None:
-    # Save file locally
+    # Save the uploaded file locally
     bytes_data = uploaded_file.getvalue()
     with open(uploaded_file.name, "wb") as file:
         file.write(bytes_data)
 
-    st.image(uploaded_file, caption="Uploaded Image", use_column_width=True)
+    st.image(uploaded_file, caption="🎨 Teddy is looking at your picture...", use_column_width=True)
 
-    # Stage 1: Image to Text (Using the function)
-    st.text('Processing img2text...')
+    # Stage 1: Image to Text 
+    st.subheader('🐾 Teddy sees...')
     scenario = img2text(uploaded_file.name)
-    st.write(f"**Scenario:** {scenario}")
+    st.write(f": orange[I think I see {scenario} in this picture!]")
 
-    # Stage 2: Text to Story (Inline)
-    st.text('Generating a story...')
-    story_pipe = pipeline("text-generation", model="pranavpsv/genre-story-generator-v2")
-    story_results = story_pipe(scenario)
-    story = story_results[0]['generated_text']
-    st.write(f"**Story:** {story}")
+    # Stage 2: Text to Story
+    st.subheader('🧸 Teddy is writing a story for you...')
+    story = text2story(scenario)
+    st.balloons()
+    st.write(f": orange[**🐻 Teddy's Honey Tale:**] {story}")
 
-    # Stage 3: Story to Audio (Inline)
-    st.text('Generating audio data...')
-    audio_pipe = pipeline("text-to-audio", model="Matthijs/mms-tts-eng")
-    audio_data = audio_pipe(story)
+    # Stage 3: Story to Audio
+    st.subheader("🎧 Listen to Teddy!")
+    audio_output = text2audio(story)
 
-    # Play button
-    if st.button("Play Audio"):
-        audio_array = audio_data["audio"]
-        sample_rate = audio_data["sampling_rate"]
+    # Play Button
+    if st.button("👂 Click to hear Teddy tell the story!"):
+        audio_array = audio_output["audio"]
+        sample_rate = audio_output["sampling_rate"]
         st.audio(audio_array, sample_rate=sample_rate)
