@@ -9,9 +9,11 @@ def img2text(url):
     return text
 
 def text2story(scenario):
+    # 1. 定义模型和提示词
     story_pipe = pipeline("text-generation", model="gpt2")
-    prompt = f"Teddy bear is happy. He tells a sweet story for children about {scenario}: Once upon a time,"
+    prompt = f"Teddy bear tells a sweet story for children about {scenario}: Once upon a time,"
     
+    # 2. 生成故事
     story_results = story_pipe(
         prompt,
         max_new_tokens=50,
@@ -20,8 +22,15 @@ def text2story(scenario):
         truncation=True
     )
     
+    # 3. 处理结果
     full_text = story_results[0]['generated_text']
     story = full_text.replace(prompt, "Once upon a time,").strip()
+    
+    # 4. 关键：确保一定有文字返回，防止后端报错
+    if not story:
+        return "Once upon a time, Teddy went to the forest and had a great day!"
+        
+    return story
     
 def text2audio(story_text):
     audio_pipe = pipeline("text-to-audio", model="Matthijs/mms-tts-eng")
