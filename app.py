@@ -10,31 +10,36 @@ def img2text(url):
 
 
 def text2story(caption):
+    """
+    Generate a 50-100 word child-friendly story based on the image caption.
+    """
     story_generator = pipeline(
-        "text-generation",
-        model="gpt2"
+        "text2text-generation",
+        model="google/flan-t5-base"
     )
 
     prompt = (
-        f"Write a happy, simple story for children aged 3 to 10. "
-        f"The story is based on this picture: {caption}. "
-        f"Use easy English. Do not include violence, death, stealing, accidents, romance, or scary events. "
-        f"Story: Once upon a time,"
+        "Write a simple, happy story for children aged 3 to 10. "
+        "The story must be based only on this picture description: "
+        f"{caption}. "
+        "The story should be safe, friendly, and easy to understand. "
+        "Do not include death, stealing, accidents, romance, violence, or scary events. "
+        "Write 50 to 100 words."
     )
 
     result = story_generator(
         prompt,
-        max_new_tokens=90,
-        do_sample=True,
-        temperature=0.7,
-        top_p=0.9,
-        repetition_penalty=1.2,
-        truncation=True
+        max_new_tokens=120,
+        do_sample=False
     )
 
-    generated_text = result[0]["generated_text"]
-    story = generated_text.replace(prompt, "").strip()
-    story = "Once upon a time, " + story
+    story = result[0]["generated_text"]
+    story = clean_text(story)
+
+    if len(story.split()) < 50 or not is_child_friendly(story):
+        story = fallback_story(caption)
+
+    story = limit_words(story, max_words=100)
 
     return story
     
