@@ -26,26 +26,37 @@ def load_story_generator():
 def text2story(caption):
     story_generator = load_story_generator()
 
-    # 1. 在 Prompt 里明确字数边界，去掉 "long" 这种词
+    # 1. 在 Prompt 里给出一个明确的“结尾指令”
+    # 告诉它必须以特定的方式收尾，这样它会更有目的地书写
     prompt = (
-        f"Write a short, happy story for a child about {caption}. "
-        "The story must be between 60 and 90 words. "
-        "Start with 'Once upon a time'. "
-        "Use only 5 to 6 sentences. Focus on one simple fun moment."
+        f"Write a short children's story about {caption}. "
+        "Structure: \n"
+        "1. Start with 'Once upon a time'. \n"
+        "2. Describe a happy moment. \n"
+        "3. END the story with a final happy sentence like 'They all went home with a big smile.' \n"
+        "Limit the story to 5-7 sentences and about 80 words."
     )
 
-    # 2. 调整参数：max_new_tokens 是控制长度最有效的武器
-    # 1个单词大约 1.3 个 token，100个词大约就是 130 tokens
+    # 2. 关键参数微调
     result = story_generator(
         prompt,
-        max_new_tokens=130,    # 严格上限，防止生成过长
-        min_new_tokens=75,     # 严格下限，防止生成过短（确保达到50词）
+        max_new_tokens=150,    # 稍微调大一点，给结尾留出“呼吸空间”，防止被切断
+        min_new_tokens=80,     # 确保达到 50 词以上
         do_sample=True,
-        temperature=0.7,       # 稍微降低随机性，让逻辑更紧凑
-        repetition_penalty=2.0 # 提高惩罚，防止反复说 "the park"
+        temperature=0.8, 
+        repetition_penalty=3.5, # 【重要】显著提高惩罚，防止它一直念叨 "park" 和 "play"
+        no_repeat_ngram_size=3  # 防止连续三个词重复
     )
 
     story = result[0]["generated_text"]
+    
+    # 3. 兜底逻辑：如果模型还是没写完，我们手动检查一下标点
+    # 如果最后一句没有句号，说明没写完
+    story = story.strip()
+    if not story.endswith(('.', '!', '?')):
+        # 尝试补一个温暖的结尾词
+        story += " and they lived happily ever after."
+
     return clean_text(story)
     
 @st.cache_resource
