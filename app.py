@@ -3,11 +3,13 @@ from transformers import pipeline
 
 # Function Part
 
+# Image to Text
 def img2text(url):
     image_to_text_model = pipeline("image-to-text", model="Salesforce/blip-image-captioning-base")
     text = image_to_text_model(url)[0]["generated_text"]
     return text
 
+# Cleans up the generated texts
 def clean_text(text):
     """
     Clean generated text by removing extra spaces and line breaks.
@@ -16,6 +18,7 @@ def clean_text(text):
     text = " ".join(text.split())
     return text.strip()
 
+# Text to Story
 @st.cache_resource
 def load_story_generator():
     return pipeline(
@@ -35,7 +38,7 @@ def text2story(caption):
         "Limit the story to 5-7 sentences and about 80 words."
     )
 
-
+   # Generation Parameters:
     result = story_generator(
         prompt,
         max_new_tokens=150,    
@@ -54,7 +57,8 @@ def text2story(caption):
         story += " and they lived happily ever after."
 
     return clean_text(story)
-    
+
+# Story to Audio 
 @st.cache_resource
 def load_audio_generator():
     return pipeline(
