@@ -26,7 +26,7 @@ def load_story_generator():
 def text2story(caption):
     story_generator = load_story_generator()
 
-   prompt = (
+    prompt = (
         f"Write a short children's story about {caption}. "
         "Structure: \n"
         "1. Start with 'Once upon a time'. \n"
