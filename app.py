@@ -16,11 +16,15 @@ def clean_text(text):
     text = " ".join(text.split())
     return text.strip()
 
-def text2story(caption):
-    story_generator = pipeline(
+@st.cache_resource
+def load_story_generator():
+    return pipeline(
         "text2text-generation",
         model="google/flan-t5-small"
     )
+
+def text2story(caption):
+    story_generator = load_story_generator()
 
     prompt = (
         "Write a simple, happy story for children aged 3 to 10. "
@@ -43,8 +47,15 @@ def text2story(caption):
 
     return story
     
+@st.cache_resource
+def load_audio_generator():
+    return pipeline(
+        "text-to-audio",
+        model="Matthijs/mms-tts-eng"
+    )
+
 def text2audio(story_text):
-    audio_pipe = pipeline("text-to-audio", model="Matthijs/mms-tts-eng")
+    audio_pipe = load_audio_generator()
     audio_data = audio_pipe(story_text)
     return audio_data
 
